@@ -24,7 +24,7 @@ public class OnePointCrossover implements Crossover {
             BinaryChromosome o1 = (BinaryChromosome) b1.copy();
             BinaryChromosome o2 = (BinaryChromosome) b2.copy();
 
-            for(int i = r1; i < leng - 1 ; i++) {
+            for(int i = r1; i < leng  ; i++) {
                 int tmp = o1.getGene(i);
                 o1.setGene(i, o2.getGene(i));
                 o2.setGene(i,tmp);
@@ -39,7 +39,7 @@ public class OnePointCrossover implements Crossover {
             IntegerChromosome o1 = (IntegerChromosome) b1.copy();
             IntegerChromosome o2 = (IntegerChromosome) b2.copy();
 
-            for(int i = r1; i < leng-1; i++) {
+            for(int i = r1; i < leng; i++) {
                 int tmp = o1.getGene(i);
                 o1.setGene(i, o2.getGene(i));
                 o2.setGene(i,tmp);
@@ -54,7 +54,7 @@ public class OnePointCrossover implements Crossover {
             FloatingPointChromosome o1 = (FloatingPointChromosome) b1.copy();
             FloatingPointChromosome o2 = (FloatingPointChromosome) b2.copy();
 
-            for(int i = r1; i < leng - 1; i++) {
+            for(int i = r1; i < leng ; i++) {
                 double tmp = o1.getGene(i);
                 o1.setGene(i, o2.getGene(i));
                 o2.setGene(i,tmp);
