@@ -47,4 +47,17 @@ public class FloatingPointChromosome extends Chromosome<Double> {
         result += "]";
         return result;
     }
+
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+    public double getMaxValue() {
+        return maxValue;
+    }
+
 }
+
+
+
