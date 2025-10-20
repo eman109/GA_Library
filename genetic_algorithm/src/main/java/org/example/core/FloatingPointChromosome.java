@@ -1,15 +1,15 @@
 package org.example.core;
 
-
 import java.util.Random;
 
-public class FloatingPointChromosome extends Chromosome {
+public class FloatingPointChromosome extends Chromosome<Double> {
 
+    private static final Random random = new Random();
     private double minValue;
     private double maxValue;
 
     public FloatingPointChromosome(int length, double minValue, double maxValue) {
-        super(length);
+        genes = new Double[length];
         this.minValue = minValue;
         this.maxValue = maxValue;
         initialize();
@@ -17,21 +17,24 @@ public class FloatingPointChromosome extends Chromosome {
 
     @Override
     public void initialize() {
-        Random random = new Random();
         for (int i = 0; i < genes.length; i++) {
-            double value = minValue + (maxValue - minValue) * random.nextDouble();
-            genes[i] = value;
+            genes[i] = minValue + (maxValue - minValue) * random.nextDouble();
         }
     }
 
     @Override
-    public Chromosome copy() {
-        FloatingPointChromosome clone = new FloatingPointChromosome(this.length(), this.minValue, this.maxValue);
-        for (int i = 0; i < this.length(); i++) {
-            clone.setGene(i, this.getGene(i));
+    public Chromosome<Double> copy() {
+        FloatingPointChromosome clone = new FloatingPointChromosome(genes.length, minValue, maxValue);
+        for (int i = 0; i < genes.length; i++) {
+            clone.genes[i] = this.genes[i];
         }
-        clone.setFitness(this.getFitness());
+        clone.fitness = this.fitness;
         return clone;
+    }
+
+    @Override
+    public int length() {
+        return genes.length;
     }
 
     @Override
@@ -45,4 +48,3 @@ public class FloatingPointChromosome extends Chromosome {
         return result;
     }
 }
-

@@ -1,15 +1,15 @@
 package org.example.core;
 
-
 import java.util.Random;
 
-public class IntegerChromosome extends Chromosome {
+public class IntegerChromosome extends Chromosome<Integer> {
 
+    private static final Random random = new Random();
     private int minValue;
     private int maxValue;
 
     public IntegerChromosome(int length, int minValue, int maxValue) {
-        super(length);
+        genes = new Integer[length];
         this.minValue = minValue;
         this.maxValue = maxValue;
         initialize();
@@ -17,29 +17,31 @@ public class IntegerChromosome extends Chromosome {
 
     @Override
     public void initialize() {
-        Random random = new Random();
         for (int i = 0; i < genes.length; i++) {
-            // random integer between minValue and maxValue
-            int value = random.nextInt(maxValue - minValue + 1) + minValue;
-            genes[i] = value;
+            genes[i] = random.nextInt(maxValue - minValue + 1) + minValue;
         }
     }
 
     @Override
-    public Chromosome copy() {
-        IntegerChromosome clone = new IntegerChromosome(this.length(), this.minValue, this.maxValue);
-        for (int i = 0; i < this.length(); i++) {
-            clone.setGene(i, this.getGene(i));
+    public Chromosome<Integer> copy() {
+        IntegerChromosome clone = new IntegerChromosome(genes.length, minValue, maxValue);
+        for (int i = 0; i < genes.length; i++) {
+            clone.genes[i] = this.genes[i];
         }
-        clone.setFitness(this.getFitness());
+        clone.fitness = this.fitness;
         return clone;
+    }
+
+    @Override
+    public int length() {
+        return genes.length;
     }
 
     @Override
     public String toString() {
         String result = "[";
         for (int i = 0; i < genes.length; i++) {
-            result += (int) genes[i];
+            result += genes[i];
             if (i < genes.length - 1) result += " ";
         }
         result += "]";

@@ -1,29 +1,14 @@
 package org.example.core;
 
-import java.util.Arrays;
-
-public abstract class Chromosome {
-    protected double[] genes;
+public abstract class Chromosome<T> {
+    protected T[] genes;
     protected double fitness;
 
-    public Chromosome(int length) {
-        genes = new double[length];
-    }
-
     public abstract void initialize();
-    public abstract Chromosome copy();
-
-    public int length() {
-        return genes.length;
-    }
-
-    public double getGene(int index) {
-        return genes[index];
-    }
-
-    public void setGene(int index, double value) {
-        genes[index] = value;
-    }
+    public abstract Chromosome<T> copy();
+    public abstract int length();
+    @Override
+    public abstract String toString();
 
     public double getFitness() {
         return fitness;
@@ -33,8 +18,20 @@ public abstract class Chromosome {
         this.fitness = fitness;
     }
 
-    @Override
-    public String toString() {
-        return Arrays.toString(genes);
+    public T getGene(int index) {
+        return genes[index];
     }
+
+    public void setGene(int index, T value) {
+        genes[index] = value;
+    }
+
+    public T[] getGenes() {
+        return genes;
+    }
+
+    public void setGenes(T[] genes) {
+        this.genes = genes;
+    }
+
 }
