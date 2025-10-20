@@ -58,6 +58,3 @@ public class FloatingPointChromosome extends Chromosome<Double> {
     }
 
 }
-
-
-
