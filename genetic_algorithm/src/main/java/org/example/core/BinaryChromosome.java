@@ -2,39 +2,42 @@ package org.example.core;
 
 import java.util.Random;
 
-public class BinaryChromosome extends Chromosome {
+public class BinaryChromosome extends Chromosome<Integer> {
+
+    private static final Random random = new Random();
 
     public BinaryChromosome(int length) {
-        super(length);
+        genes = new Integer[length];
         initialize();
     }
 
     @Override
     public void initialize() {
-        Random random = new Random();
         for (int i = 0; i < genes.length; i++) {
-            // assign either 0 or 1 randomly
-            genes[i] = random.nextBoolean() ? 1.0 : 0.0;
+            genes[i] = random.nextInt(2); // 0 or 1
         }
     }
 
     @Override
-    public Chromosome copy() {
-
-        BinaryChromosome clone = new BinaryChromosome(this.length());
-        for (int i = 0; i < this.length(); i++) {
-            clone.setGene(i, this.getGene(i));
+    public Chromosome<Integer> copy() {
+        BinaryChromosome clone = new BinaryChromosome(genes.length);
+        for (int i = 0; i < genes.length; i++) {
+            clone.genes[i] = this.genes[i];
         }
-        clone.setFitness(this.getFitness());
+        clone.fitness = this.fitness;
         return clone;
     }
 
     @Override
-    public String toString() {
+    public int length() {
+        return genes.length;
+    }
 
+    @Override
+    public String toString() {
         String result = "[";
         for (int i = 0; i < genes.length; i++) {
-            result += (int) genes[i];  // show as 0 or 1
+            result += genes[i];
             if (i < genes.length - 1) result += " ";
         }
         result += "]";
