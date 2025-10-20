@@ -9,7 +9,7 @@ public class TwoPointCrossover implements Crossover{
     public Chromosome[] crossover(Chromosome p1, Chromosome p2, double pc) {
         int leng = p1.length();
 
-        int r1 = 1 + random.nextInt(leng - 1);
+        int r1 = 1 + random.nextInt(leng - 2);
         int r2 = r1 + 1 + random.nextInt(leng - r1 - 1);
         double r3 = random.nextDouble();
 
@@ -24,7 +24,7 @@ public class TwoPointCrossover implements Crossover{
             BinaryChromosome o1 = (BinaryChromosome)b1.copy();
             BinaryChromosome o2 = (BinaryChromosome)b2.copy();
 
-            for(int i = r1 ; i < r3 ; i++){
+            for(int i = r1 ; i < r2 ; i++){
                 int temp = o1.getGene(i);
                 o1.setGene(i, o2.getGene(i));
                 o2.setGene(i, temp);
@@ -39,7 +39,7 @@ public class TwoPointCrossover implements Crossover{
             IntegerChromosome o1 = (IntegerChromosome) b1.copy();
             IntegerChromosome o2 = (IntegerChromosome) b2.copy();
 
-            for(int i = r1 ; i < r3 ; i++){
+            for(int i = r1 ; i < r2 ; i++){
                 int temp = o1.getGene(i);
                 o1.setGene(i, o2.getGene(i));
                 o2.setGene(i, temp);

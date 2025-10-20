@@ -18,6 +18,12 @@ public class Main {
         Mutation uniform = new Uniform();
         Mutation swap = new Swap();
 
+        Crossover onePoint = new OnePointCrossover();
+        Crossover uniformCross = new UniformCrossover(); // <-- added UniformCrossover
+
+        // ============================
+        // Integer Chromosomes (Swap Mutation)
+        // ============================
         System.out.println("\n=== Integer Chromosomes with Swap Mutation ===\n");
         for (int i = 1; i <= numChromosomes; i++) {
             IntegerChromosome intChrom = new IntegerChromosome(chromosomeLength, 0, 9);
@@ -28,6 +34,9 @@ public class Main {
             System.out.println("-----------------------------------\n");
         }
 
+        // ============================
+        // Binary Chromosomes (BitFlip Mutation)
+        // ============================
         System.out.println("=== Binary Chromosomes with BitFlip Mutation ===\n");
 
         for (int i = 1; i <= numChromosomes; i++) {
@@ -43,6 +52,9 @@ public class Main {
             System.out.println("Fitness of Chromosome #" + i + ": " + score + "\n-----------------------------------\n");
         }
 
+        // ============================
+        // Floating-Point Chromosomes (Uniform Mutation)
+        // ============================
         System.out.println("\n=== Floating-Point Chromosomes with Uniform Mutation ===\n");
 
         for (int i = 1; i <= numChromosomes; i++) {
@@ -52,9 +64,93 @@ public class Main {
             // Apply Uniform mutation
             uniform.mutateFunction(floatChrom, 0.5); // same PM (0.5)
             System.out.println("Chromosome #" + i + " (after mutation):  " + floatChrom);
-
-            // Evaluate fitness — optional, only if MultiProjectFitness supports floating-point genes
             System.out.println("-----------------------------------\n");
         }
+
+        // ============================
+        // Binary Chromosomes (One-Point Crossover)
+        // ============================
+        System.out.println("\n=== Binary Chromosomes with One-Point Crossover ===\n");
+
+        for (int i = 1; i <= numChromosomes; i++) {
+            BinaryChromosome parent1 = new BinaryChromosome(chromosomeLength);
+            BinaryChromosome parent2 = new BinaryChromosome(chromosomeLength);
+
+            System.out.println("Parent 1: " + parent1);
+            System.out.println("Parent 2: " + parent2);
+
+            Chromosome[] offspring = onePoint.crossover(parent1, parent2, 1.0); // 70% crossover probability
+
+            System.out.println("Offspring 1: " + offspring[0]);
+            System.out.println("Offspring 2: " + offspring[1]);
+            System.out.println("-----------------------------------\n");
+        }
+
+        // ============================
+        // Uniform Crossover demos (Binary, Integer, Floating)
+        // ============================
+        System.out.println("\n=== Binary Chromosomes with Uniform Crossover ===\n");
+        for (int i = 1; i <= numChromosomes; i++) {
+            BinaryChromosome p1 = new BinaryChromosome(chromosomeLength);
+            BinaryChromosome p2 = new BinaryChromosome(chromosomeLength);
+
+            System.out.println("Parent 1: " + p1);
+            System.out.println("Parent 2: " + p2);
+
+            Chromosome[] off = uniformCross.crossover(p1, p2, 1.0); // 80% chance to perform crossover
+            System.out.println("Offspring 1: " + off[0]);
+            System.out.println("Offspring 2: " + off[1]);
+            System.out.println("-----------------------------------\n");
+        }
+
+        System.out.println("\n=== Integer Chromosomes with Uniform Crossover ===\n");
+        for (int i = 1; i <= numChromosomes; i++) {
+            IntegerChromosome p1 = new IntegerChromosome(chromosomeLength, 0, 9);
+            IntegerChromosome p2 = new IntegerChromosome(chromosomeLength, 0, 9);
+
+            System.out.println("Parent 1: " + p1);
+            System.out.println("Parent 2: " + p2);
+
+            Chromosome[] off = uniformCross.crossover(p1, p2, 1.0);
+            System.out.println("Offspring 1: " + off[0]);
+            System.out.println("Offspring 2: " + off[1]);
+            System.out.println("-----------------------------------\n");
+        }
+
+        System.out.println("\n=== Floating-Point Chromosomes with Uniform Crossover ===\n");
+        for (int i = 1; i <= numChromosomes; i++) {
+            FloatingPointChromosome p1 = new FloatingPointChromosome(chromosomeLength, 0.0, 10.0);
+            FloatingPointChromosome p2 = new FloatingPointChromosome(chromosomeLength, 0.0, 10.0);
+
+            System.out.println("Parent 1: " + p1);
+            System.out.println("Parent 2: " + p2);
+
+            Chromosome[] off = uniformCross.crossover(p1, p2, 1.0);
+            System.out.println("Offspring 1: " + off[0]);
+            System.out.println("Offspring 2: " + off[1]);
+            System.out.println("-----------------------------------\n");
+        }
+
+        // ============================
+// Binary Chromosomes (Two-Point Crossover)
+// ============================
+        System.out.println("\n=== Binary Chromosomes with Two-Point Crossover ===\n");
+
+        Crossover twoPoint = new TwoPointCrossover(); // ✅ Create instance
+
+        for (int i = 1; i <= numChromosomes; i++) {
+            BinaryChromosome parent1 = new BinaryChromosome(chromosomeLength);
+            BinaryChromosome parent2 = new BinaryChromosome(chromosomeLength);
+
+            System.out.println("Parent 1: " + parent1);
+            System.out.println("Parent 2: " + parent2);
+
+            Chromosome[] offspring = twoPoint.crossover(parent1, parent2, 1.0); // 70% probability
+
+            System.out.println("Offspring 1: " + offspring[0]);
+            System.out.println("Offspring 2: " + offspring[1]);
+            System.out.println("-----------------------------------\n");
+        }
+
     }
 }

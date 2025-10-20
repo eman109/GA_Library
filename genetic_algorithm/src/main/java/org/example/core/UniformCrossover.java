@@ -22,7 +22,7 @@ public class UniformCrossover implements Crossover {
             BinaryChromosome o1 = (BinaryChromosome)b1.copy();
             BinaryChromosome o2 = (BinaryChromosome)b2.copy();
 
-            for(int i = 0; i < leng-1; i++){
+            for(int i = 0; i < leng; i++){
                 if(random.nextBoolean()){
                     int tmp = o1.getGene(i);
                     o1.setGene(i, o2.getGene(i));
@@ -39,7 +39,7 @@ public class UniformCrossover implements Crossover {
             IntegerChromosome o1 = (IntegerChromosome)b1.copy();
             IntegerChromosome o2 = (IntegerChromosome)b2.copy();
 
-            for(int i = 0; i < leng-1; i++){
+            for(int i = 0; i < leng; i++){
                 if(random.nextBoolean()){
                     int tmp = o1.getGene(i);
                     o1.setGene(i, o2.getGene(i));
@@ -56,7 +56,7 @@ public class UniformCrossover implements Crossover {
             FloatingPointChromosome o1 = (FloatingPointChromosome)b1.copy();
             FloatingPointChromosome o2 = (FloatingPointChromosome)b2.copy();
 
-            for(int i = 0; i < leng-1; i++){
+            for(int i = 0; i < leng; i++){
                 if(random.nextBoolean()){
                     double tmp = o1.getGene(i);
                     o1.setGene(i, o2.getGene(i));
