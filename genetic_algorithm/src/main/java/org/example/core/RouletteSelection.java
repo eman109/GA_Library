@@ -15,7 +15,7 @@ public class RouletteSelection implements Selection {
         double partialSum=0;
         for(Chromosome c:population){
             partialSum+=c.getFitness();
-            if(partialSum>=r){
+            if(partialSum>r){
                 return c;
             }
         }
