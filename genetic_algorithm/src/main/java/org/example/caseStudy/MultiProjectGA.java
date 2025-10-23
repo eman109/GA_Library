@@ -7,81 +7,123 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class MultiProjectGA extends JFrame {
 
-    // === GUI Components ===
-    private JTextField populationField, generationsField, crossoverRateField, mutationRateField;
-    private JComboBox<String> chromTypeBox, mutBox, crossBox, selectBox, replaceBox;
-    private JTextArea outputArea;
-    private JButton runButton;
 
-    public MultiProjectGA() {
-        setTitle("Genetic Algorithm - Project Selector");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 700);
-        setLayout(new BorderLayout(10, 10));
-        setLocationRelativeTo(null);
+    public class MultiProjectGA extends JFrame {
 
-        // === Input Panel ===
-        JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
+        // === GUI Components ===
+        private JTextField populationField, generationsField, crossoverRateField, mutationRateField;
+        private JComboBox<String> chromTypeBox, mutBox, crossBox, selectBox, replaceBox;
+        private JTextArea outputArea;
+        private JButton runButton;
 
-        panel.add(new JLabel("Population Size:"));
-        populationField = new JTextField("10");
-        panel.add(populationField);
+        public MultiProjectGA() {
+            setTitle("Genetic Algorithm - Project Selector");
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(700, 700);
+            setLayout(new BorderLayout());
+            getContentPane().setBackground(new Color(220, 235, 255)); // soft baby blue
+            setLocationRelativeTo(null);
 
-        panel.add(new JLabel("Number of Generations:"));
-        generationsField = new JTextField("20");
-        panel.add(generationsField);
+// === Input Panel ===
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.setBackground(new Color(250, 252, 255)); // light pastel white-blue
+            panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        panel.add(new JLabel("Crossover Rate (0-1):"));
-        crossoverRateField = new JTextField("0.8");
-        panel.add(crossoverRateField);
+            Font labelFont = new Font("Times New Roman", Font.PLAIN, 16);
+            Font fieldFont = new Font("Times New Roman", Font.PLAIN, 15);
 
-        panel.add(new JLabel("Mutation Rate (0-1):"));
-        mutationRateField = new JTextField("0.1");
-        panel.add(mutationRateField);
+// Helper method to add label + component with spacing
+            java.util.function.BiConsumer<String, JComponent> addRow = (labelText, component) -> {
+                JLabel label = new JLabel(labelText);
+                label.setFont(labelFont);
+                label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                component.setAlignmentX(Component.LEFT_ALIGNMENT);
+                component.setFont(fieldFont);
+                component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+                if (component instanceof JComboBox)
+                    component.setBackground(new Color(245, 247, 255));
+                panel.add(label);
+                panel.add(Box.createVerticalStrut(5));
+                panel.add(component);
+                panel.add(Box.createVerticalStrut(15));
+            };
 
-        panel.add(new JLabel("Chromosome Type:"));
-        chromTypeBox = new JComboBox<>(new String[]{"Binary", "Integer", "Floating Point"});
-        panel.add(chromTypeBox);
+// === Inputs ===
+            populationField = new JTextField("10");
+            generationsField = new JTextField("20");
+            crossoverRateField = new JTextField("0.8");
+            mutationRateField = new JTextField("0.1");
 
-        panel.add(new JLabel("Mutation Type:"));
-        mutBox = new JComboBox<>(new String[]{"BitFlip", "Swap", "Uniform"});
-        panel.add(mutBox);
+            chromTypeBox = new JComboBox<>(new String[]{"Binary", "Integer", "Floating Point"});
+            mutBox = new JComboBox<>(new String[]{"BitFlip", "Swap", "Uniform"});
+            crossBox = new JComboBox<>(new String[]{"OnePoint", "TwoPoint", "Uniform"});
+            selectBox = new JComboBox<>(new String[]{"Roulette", "Tournament"});
+            replaceBox = new JComboBox<>(new String[]{"Generational", "Steady-State", "Elitism"});
 
-        panel.add(new JLabel("Crossover Type:"));
-        crossBox = new JComboBox<>(new String[]{"OnePoint", "TwoPoint", "Uniform"});
-        panel.add(crossBox);
+// Style all combo boxes
+            for (JComboBox<?> box : new JComboBox[]{chromTypeBox, mutBox, crossBox, selectBox, replaceBox}) {
+                box.setBackground(new Color(245, 247, 255));
+                box.setBorder(BorderFactory.createLineBorder(new Color(180, 200, 255), 1, true));
+                box.setFont(fieldFont);
+            }
 
-        panel.add(new JLabel("Selection Type:"));
-        selectBox = new JComboBox<>(new String[]{"Roulette", "Tournament"});
-        panel.add(selectBox);
+// Add rows neatly spaced
+            addRow.accept("Population Size:", populationField);
+            addRow.accept("Number of Generations:", generationsField);
+            addRow.accept("Crossover Rate (0-1):", crossoverRateField);
+            addRow.accept("Mutation Rate (0-1):", mutationRateField);
+            addRow.accept("Chromosome Type:", chromTypeBox);
+            addRow.accept("Mutation Type:", mutBox);
+            addRow.accept("Crossover Type:", crossBox);
+            addRow.accept("Selection Type:", selectBox);
+            addRow.accept("Replacement Strategy:", replaceBox);
 
-        panel.add(new JLabel("Replacement Strategy:"));
-        replaceBox = new JComboBox<>(new String[]{"Generational", "Steady-State", "Elitism"});
-        panel.add(replaceBox);
+// === Run Button ===
+            runButton = new JButton("Run GA");
+            runButton.setFont(new Font("Times New Roman", Font.BOLD, 16));
+            runButton.setBackground(new Color(100, 150, 255));
+            runButton.setForeground(Color.WHITE);
+            runButton.setFocusPainted(false);
+            runButton.setBorder(BorderFactory.createEmptyBorder(12, 25, 12, 25));
+            runButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            runButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+            runButton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(80, 130, 255), 1, true),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+            panel.add(Box.createVerticalStrut(10));
+            panel.add(runButton);
 
-        runButton = new JButton("Run GA");
-        panel.add(new JLabel());
-        panel.add(runButton);
+// === Scrollable Panel ===
+            JScrollPane inputScroll = new JScrollPane(panel);
+            inputScroll.setBorder(BorderFactory.createEmptyBorder());
+            inputScroll.getVerticalScrollBar().setUnitIncrement(16);
+            inputScroll.setPreferredSize(new Dimension(700, 0));
+            add(inputScroll, BorderLayout.WEST);
 
-        add(panel, BorderLayout.NORTH);
+// === Output Area ===
+            outputArea = new JTextArea();
+            outputArea.setEditable(false);
+            outputArea.setFont(new Font("Consolas", Font.PLAIN, 13));
+            outputArea.setMargin(new Insets(10, 10, 10, 10));
+            outputArea.setBackground(new Color(250, 252, 255));
+            JScrollPane scrollPane = new JScrollPane(outputArea);
+            scrollPane.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(new Color(180, 200, 255), 1),
+                    "Genetic Algorithm Output",
+                    0, 0, new Font("Times New Roman", Font.BOLD, 14)
+            ));
+            add(scrollPane, BorderLayout.CENTER);
 
-        // === Output Area ===
-        outputArea = new JTextArea();
-        outputArea.setEditable(false);
-        outputArea.setFont(new Font("Consolas", Font.PLAIN, 13));
-        JScrollPane scrollPane = new JScrollPane(outputArea);
-        add(scrollPane, BorderLayout.CENTER);
 
-        // Auto-scroll as new lines are added
-        DefaultCaret caret = (DefaultCaret) outputArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+// Auto-scroll for output
+            DefaultCaret caret = (DefaultCaret) outputArea.getCaret();
+            caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        // === Button Action ===
-        runButton.addActionListener(e -> runGA());
-    }
-
+// === Button Action ===
+            runButton.addActionListener(e -> runGA());}
     private void runGA() {
         try {
             // === Define project data ===
