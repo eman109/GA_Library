@@ -7,7 +7,9 @@ public class BitFlip implements Mutation {
 
     @Override
     public void mutateFunction(Chromosome chromosome , double PM ) {
-        if (!(chromosome instanceof BinaryChromosome)) return;
+        if (!(chromosome instanceof BinaryChromosome)){
+            System.out.println("BitFlip mutation only works with BinaryChromosome. No mutation applied.");
+            return;}
         BinaryChromosome binary = (BinaryChromosome) chromosome;
         Integer[] genes = binary.getGenes();
         int length = genes.length;

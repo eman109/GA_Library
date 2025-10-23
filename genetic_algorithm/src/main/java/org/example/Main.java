@@ -189,5 +189,27 @@ public class Main {
             System.out.println("Chromosome #" + (i + 1) + ": " + elitismNextGen.get(i)
                     + ", Fitness: " + elitismNextGen.get(i).getFitness());
         }
+
+        // ============================
+// Order-One Crossover Demo
+// ============================
+        System.out.println("=== Integer Chromosomes with Order-One Crossover ===\n");
+        OrderOneCrossover orderOne = new OrderOneCrossover();
+
+        for (int i = 1; i <= numChromosomes; i++) {
+            // Create parents with genes in range 0..chromosomeLength-1
+            IntegerChromosome parent1 = IntegerChromosome.generateUniqueIntegerChromosome(chromosomeLength, 0, chromosomeLength - 1);
+            IntegerChromosome parent2 = IntegerChromosome.generateUniqueIntegerChromosome(chromosomeLength, 0, chromosomeLength - 1);
+
+            System.out.println("Parent 1: " + parent1);
+            System.out.println("Parent 2: " + parent2);
+
+            Chromosome[] off = orderOne.crossover(parent1, parent2, 1.0);
+
+            System.out.println("Offspring 1: " + off[0]);
+            System.out.println("Offspring 2: " + off[1]);
+            System.out.println("-----------------------------------\n");
+        }
+
     }
 }

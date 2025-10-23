@@ -11,7 +11,9 @@ public class Uniform implements Mutation {
 
     @Override
     public void mutateFunction(Chromosome chromosome, double PM) {
-        if (!(chromosome instanceof FloatingPointChromosome)) return;
+        if (!(chromosome instanceof FloatingPointChromosome)){
+            System.out.println("this mutation only works with floatChromosome. No mutation applied.");
+            return;}
 
         FloatingPointChromosome floatChrom = (FloatingPointChromosome) chromosome;
         Double[] genes = floatChrom.getGenes();

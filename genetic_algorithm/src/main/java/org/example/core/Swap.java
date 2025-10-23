@@ -8,7 +8,11 @@ public class Swap implements Mutation {
     Random random = new Random();
     @Override
     public void mutateFunction(Chromosome chromosome  ,double PM) {
-        if (!(chromosome instanceof IntegerChromosome)) return;
+        if (!(chromosome instanceof IntegerChromosome)){
+            System.out.println("this mutation only works with intgerChromosome. No mutation applied.");
+
+            return;
+        }
         IntegerChromosome integerChromosome = (IntegerChromosome) chromosome;
         Integer[] genes = integerChromosome.getGenes();
         int length = genes.length;

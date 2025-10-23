@@ -47,4 +47,28 @@ public class IntegerChromosome extends Chromosome<Integer> {
         result += "]";
         return result;
     }
+
+    public static IntegerChromosome generateUniqueIntegerChromosome(int length, int minValue, int maxValue) {
+        IntegerChromosome chrom = new IntegerChromosome(length, minValue, maxValue);
+        Random rand = new Random();
+
+        for (int i = 0; i < chrom.length(); i++) {
+            int val;
+            do {
+                val = minValue + rand.nextInt(maxValue - minValue + 1);
+            } while (containsGene(chrom, i, val));
+            chrom.setGene(i, val);
+        }
+        return chrom;
+    }
+
+    // Helper to check if value exists in chromosome up to current index
+    private static boolean containsGene(IntegerChromosome chrom, int uptoIndex, int val) {
+        for (int j = 0; j < uptoIndex; j++) {
+            if (chrom.getGene(j) == val) return true;
+        }
+        return false;
+    }
+
+
 }
