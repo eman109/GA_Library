@@ -13,7 +13,10 @@ public class TrapezoidalMF implements MembershipFunction{
         this.s3 = s3;
         this.s4 = s4;
     }
-
+    public double getS1() { return s1; }
+    public double getS2() { return s2; }
+    public double getS3() { return s3; }
+    public double getS4() { return s4; }
     @Override
     public double evaluate(double x) {
         double leftslope = (x - s1) / (s2 - s1);

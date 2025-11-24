@@ -11,6 +11,10 @@ public class TriangularMF implements MembershipFunction{
         this.s2 = s2;
         this.s3 = s3;
     }
+    // TriangularMF
+    public double getS1() { return s1; }
+    public double getS2() { return s2; }
+    public double getS3() { return s3; }
 
     @Override
     public double evaluate(double x) {

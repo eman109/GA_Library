@@ -9,6 +9,13 @@ public class GaussianMF implements MembershipFunction{
         this.sigma = sigma;
         this.mean = mean;
     }
+    public double getMean() {
+        return mean;
+    }
+
+    public double getSigma() {
+        return sigma;
+    }
 
     @Override
     public double evaluate(double x) {
