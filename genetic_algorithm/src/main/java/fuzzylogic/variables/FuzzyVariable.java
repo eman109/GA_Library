@@ -1,17 +1,14 @@
 package fuzzylogic.variables;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-//represent variables like fever, temperature
-//Can contain multiple fuzzy sets
 public class FuzzyVariable {
     private final String varName;
-    private final double minValue; //min value for x
+    private final double minValue; // min value for x
     private final double maxValue; // max value for x
 
-    private final Map<String, FuzzySet> setsStored; //stores all fuzzy sets of the variable key -> the name of set value -> Fuzzy set
+    private final Map<String, FuzzySet> setsStored; // stores all fuzzy sets
 
     public FuzzyVariable(String varName, double minValue, double maxValue) {
         this.varName = varName;
@@ -20,45 +17,49 @@ public class FuzzyVariable {
         this.setsStored = new LinkedHashMap<>();
     }
 
-    public String getVarName() { //getter to get the variable name
-        return varName;
+    public String getVarName() { return varName; }
+    public double getMinValue() { return minValue; }
+    public double getMaxValue() { return maxValue; }
+
+    public void addFuzzySet(FuzzySet set) { setsStored.put(set.getSetName(), set); }
+
+    public FuzzySet getFuzzySet(String setName) {
+        FuzzySet set = setsStored.get(setName);
+        if (set == null) {
+            // Return first set as default if the requested set does not exist
+            if (!setsStored.isEmpty()) {
+                return setsStored.values().iterator().next();
+            } else {
+                throw new IllegalArgumentException("No fuzzy sets available in variable " + varName);
+            }
+        }
+        return set;
     }
-
-    public double getMinValue() { //getter to get the variable min range
-        return minValue;
-    }
-
-    public double getMaxValue() { //getter to get the variable max range
-        return maxValue;
-    }
-
-
-    public void addFuzzySet(FuzzySet set) { //add a set to the variable
-        setsStored.put(set.getSetName(),set);
-    }
-
-    public FuzzySet getFuzzySet(String setName) { //gets a single set
-        return setsStored.get(setName);
-    }
-
-    public Map<String, FuzzySet> getAllFuzzySets() { //gets all sets
+    public Map<String, FuzzySet> getAllFuzzySets() {
         return setsStored;
     }
 
-    public double getMembershipForASingleSet(String setName , double x) { //Computes μ(x) for a specific set
-        FuzzySet set = setsStored.get(setName);
-        if (set == null) {
-            throw new IllegalArgumentException("Set " + setName + " not found"); //Throws an error if the set does not exist
+    public double getMembershipForASingleSet(String setName, double x) {
+        if (x < minValue || x > maxValue) {
+            return 0.0; // Return 0 for out-of-range input
         }
+        FuzzySet set = getFuzzySet(setName);
         return set.evaluateMembership(x);
     }
 
-    public Map<String, Double> fuzzify(double x){ //compute all memberships at once
-        Map<String, Double> finalFuzzySets = new LinkedHashMap<>();
-        for (Map.Entry<String, FuzzySet> entry : setsStored.entrySet()) {
-            finalFuzzySets.put(entry.getKey(), entry.getValue().evaluateMembership(x));
+    public Map<String, Double> fuzzify(double x) {
+        Map<String, Double> memberships = new LinkedHashMap<>();
+        if (x < minValue || x > maxValue) {
+            // Input is out-of-range, return 0 for all sets
+            for (String key : setsStored.keySet()) {
+                memberships.put(key, 0.0);
+            }
+            return memberships;
         }
-        return finalFuzzySets;
+        for (Map.Entry<String, FuzzySet> entry : setsStored.entrySet()) {
+            memberships.put(entry.getKey(), entry.getValue().evaluateMembership(x));
+        }
+        return memberships;
     }
 
     @Override

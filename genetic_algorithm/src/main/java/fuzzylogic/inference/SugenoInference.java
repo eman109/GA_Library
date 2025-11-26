@@ -4,11 +4,14 @@ import fuzzylogic.rules.FuzzyRule;
 import fuzzylogic.operators.TNorm;
 import fuzzylogic.operators.SNorm;
 import fuzzylogic.operators.FuzzyOperators;
+import fuzzylogic.Defuzzification.SugenoWeightedAverageDefuzz;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class SugenoInference {
+
 
     public static double infer(
             List<FuzzyRule> rules,
@@ -16,12 +19,14 @@ public class SugenoInference {
             TNorm andOp,
             SNorm orOp) {
 
-        double num = 0.0;
-        double den = 0.0;
+        // Lists to store rule outputs and their firing strengths
+        List<Double> outputs = new ArrayList<>();
+        List<Double> weights = new ArrayList<>();
 
         for (FuzzyRule rule : rules) {
             if (!rule.isEnabled()) continue;
 
+            // Compute AND and OR antecedent membership values
             double andValue = 1.0;
             double orValue = 0.0;
 
@@ -39,23 +44,34 @@ public class SugenoInference {
                 }
             }
 
+            // Compute firing strength (weight) of the rule
             double firing = Math.max(andValue, orValue) * rule.getWeight();
             if (firing <= 0) continue;
 
-            //zero o/p
-            double y = Double.parseDouble(rule.getConsequent().getValue());
+            // Get the Sugeno output (usually constant)
+            double y;
+            try {
+                y = Double.parseDouble(rule.getConsequent().getValue());
+            } catch (NumberFormatException e) {
+                y = 0.0; // fallback if parsing fails
+            }
 
-            num += firing * y;
-            den += firing;
+            outputs.add(y);
+            weights.add(firing);
         }
 
-        return (den == 0) ? 0.0 : num / den;
+        // Use the Sugeno weighted average defuzzifier
+        SugenoWeightedAverageDefuzz defuzz = new SugenoWeightedAverageDefuzz();
+        return defuzz.defuzzify(outputs, weights);
     }
 
+    /**
+     * Helper method to get membership value for a given input variable and fuzzy set.
+     */
     private static double getMu(Map<String, Map<String, Double>> inputs, String var, String set) {
-        if (inputs == null) return 0;
+        if (inputs == null) return 0.0;
         var m = inputs.get(var);
-        if (m == null) return 0;
+        if (m == null) return 0.0;
         return m.getOrDefault(set, 0.0);
     }
 }

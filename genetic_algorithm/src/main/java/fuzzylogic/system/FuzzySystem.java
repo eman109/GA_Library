@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-
 @Component
 public class FuzzySystem {
 
@@ -77,3 +76,4 @@ public class FuzzySystem {
         return centroid.defuzzify(z, mu);
     }
 }
+

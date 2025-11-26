@@ -26,6 +26,13 @@ public class RuleController {
         ruleManager.addRule(rule);
         return "Rule added!";
     }
+    @PostMapping("/batch")
+    public String addRules(@RequestBody List<FuzzyRule> rules) {
+        for (FuzzyRule r : rules) {
+            ruleManager.addRule(r);
+        }
+        return rules.size() + " rules added!";
+    }
 
     // Remove a rule (by index for simplicity)
     @DeleteMapping("/{index}")

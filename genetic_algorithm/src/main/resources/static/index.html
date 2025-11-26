@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuzzy Logic Medical Diagnosis - GUI</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; max-width: 800px; }
+        label { display: block; margin-top: 10px; }
+        input, select { margin-bottom: 10px; width: 150px; }
+        button { margin-top: 20px; padding: 5px 15px; }
+        fieldset { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<h1>Fuzzy Logic Medical Diagnosis</h1>
+
+<form id="fuzzyForm">
+    <fieldset>
+        <legend>Inputs</legend>
+        <label>
+            Temperature (°C):
+            <input type="number" step="0.1" id="temp" required value="37">
+        </label>
+        <label>
+            Heart Rate (bpm):
+            <input type="number" step="1" id="heartRate" required value="80">
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Operators</legend>
+        <label>
+            AND Operator (T-Norm):
+            <select id="andOperator">
+                <option value="MIN">MIN</option>
+                <option value="PRODUCT">PRODUCT</option>
+            </select>
+        </label>
+        <label>
+            OR Operator (S-Norm):
+            <select id="orOperator">
+                <option value="MAX">MAX</option>
+                <option value="PROBOR">PROBOR</option>
+            </select>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Defuzzification Method</legend>
+        <label>
+            Output Method:
+            <select id="defuzzMethod">
+                <option value="CENTROID">Centroid</option>
+                <option value="MAXMEMBERSHIP">Max Membership</option>
+            </select>
+        </label>
+    </fieldset>
+
+    <button type="submit">Run Inference</button>
+</form>
+
+<h2>Result:</h2>
+<pre id="result"></pre>
+
+<script>
+    const form = document.getElementById('fuzzyForm');
+    const resultArea = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const temp = parseFloat(document.getElementById('temp').value);
+        const heartRate = parseFloat(document.getElementById('heartRate').value);
+        const andOp = document.getElementById('andOperator').value;
+        const orOp = document.getElementById('orOperator').value;
+        const defuzz = document.getElementById('defuzzMethod').value;
+
+        try {
+            // Call your Spring Boot API
+            // New - call the advanced endpoint
+const response = await fetch(`http://localhost:8080/api/runAdvanced?temp=${temp}&heartRate=${heartRate}&andOp=${andOp}&orOp=${orOp}&defuzz=${defuzz}`);
+
+            const data = await response.json();
+            resultArea.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+            resultArea.textContent = 'Error: ' + err;
+        }
+    });
+</script>
+</body>
+</html>

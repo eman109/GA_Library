@@ -7,10 +7,7 @@ import java.util.List;
 
 public class Aggregation {
 
-    /**
-     * Aggregate multiple clipped FuzzySets into a single FuzzySet.
-     * Uses pointwise maximum (Mamdani aggregation).
-     */
+
     public static FuzzySet maxAggregate(String name, List<FuzzySet> clippedSets) {
         // Create a FuzzySet where evaluateMembership(x) returns the max μ(x) across all sets
         return new FuzzySet(name, new MembershipFunction() {

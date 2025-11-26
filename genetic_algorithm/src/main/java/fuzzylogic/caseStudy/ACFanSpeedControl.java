@@ -3,6 +3,7 @@ package fuzzylogic.caseStudy;
 import fuzzylogic.membership.TriangularMF;
 import fuzzylogic.rules.FuzzyRule;
 import fuzzylogic.rules.RuleManager;
+
 import fuzzylogic.system.FuzzySystem;
 import fuzzylogic.variables.FuzzySet;
 import fuzzylogic.variables.FuzzyVariable;
@@ -95,3 +96,4 @@ public class ACFanSpeedControl implements CommandLineRunner {
         }
     }
 }
+
