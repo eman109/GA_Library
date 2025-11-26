@@ -148,7 +148,42 @@ public class FuzzyLogicApplication {
 
         System.out.println("\nDone.");
         return result;
+    }// ------------------------ Advanced API Endpoint ------------------------
+    @GetMapping("/runAdvanced")
+    public Map<String, Object> runAdvancedInferenceApi(
+            @RequestParam double temp,
+            @RequestParam double heartRate,
+            @RequestParam(defaultValue = "MIN") String andOp,
+            @RequestParam(defaultValue = "MAX") String orOp,
+            @RequestParam(defaultValue = "CENTROID") String defuzz
+    ) {
+        // Convert operator strings to TNorm/SNorm
+        TNorm tNorm = "PRODUCT".equalsIgnoreCase(andOp) ? TNorm.PRODUCT : TNorm.MIN;
+        SNorm sNorm = "PROBOR".equalsIgnoreCase(orOp) ? SNorm.SUM : SNorm.MAX;
+
+        // Run the existing inference logic but with custom operators
+        Map<String, Object> result = runInference(temp, heartRate);
+
+        // Override Mamdani defuzzification with chosen method if present
+        if (result.containsKey("mamdaniCentroid") && result.containsKey("mamdaniMaxMembership")) {
+            double centroid = (double) result.get("mamdaniCentroid");
+            double maxMembership = (double) result.get("mamdaniMaxMembership");
+
+            if ("MAXMEMBERSHIP".equalsIgnoreCase(defuzz)) {
+                result.put("mamdaniOutput", maxMembership);
+            } else {
+                result.put("mamdaniOutput", centroid);
+            }
+        }
+
+        // Include operator info in the result
+        result.put("TNormUsed", tNorm.name());
+        result.put("SNormUsed", sNorm.name());
+        result.put("DefuzzMethodUsed", defuzz);
+
+        return result;
     }
+
 
     // ------------------------ Helper ------------------------
     private boolean isNumeric(String str) {
