@@ -45,7 +45,26 @@ public class SugenoInference {
             }
 
             // Compute firing strength (weight) of the rule
-            double firing = Math.max(andValue, orValue) * rule.getWeight();
+            boolean hasAnd = rule.getAndAntecedents() != null && !rule.getAndAntecedents().isEmpty();
+            boolean hasOr  = rule.getOrAntecedents()  != null && !rule.getOrAntecedents().isEmpty();
+
+            double firing;
+            if (hasAnd && !hasOr) {
+                firing = andValue;
+            } else if (!hasAnd && hasOr) {
+                firing = orValue;
+            } else {
+                // Mixed AND + OR
+                String mid = rule.getMiddleOperator();
+                if (mid != null && mid.equalsIgnoreCase("AND")) {
+                    firing = Math.min(andValue, orValue);
+                } else {
+                    firing = Math.max(andValue, orValue);
+                }
+            }
+
+            firing *= rule.getWeight();
+
             if (firing <= 0) continue;
 
             // Get the Sugeno output (usually constant)

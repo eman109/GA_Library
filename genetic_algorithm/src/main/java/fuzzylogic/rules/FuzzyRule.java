@@ -15,6 +15,12 @@ public class FuzzyRule {
 
     private Map.Entry<String, String> consequent;
 
+    // "OR" (default) or "AND"
+    private String middleOperator = "OR";
+    public String getMiddleOperator() { return middleOperator; }
+    public void setMiddleOperator(String middleOperator) {
+        this.middleOperator = middleOperator;
+    }
 
     private TNorm andOperator = TNorm.MIN;
     private SNorm orOperator = SNorm.MAX;
