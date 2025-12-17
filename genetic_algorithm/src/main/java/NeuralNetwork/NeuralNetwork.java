@@ -100,4 +100,7 @@ public class NeuralNetwork {
     public double[][] predict(double[][] X) {
         return forward(X);
     }
+    public LossFunction getLossFunction() {
+        return this.lossFunction;
+    }
 }
