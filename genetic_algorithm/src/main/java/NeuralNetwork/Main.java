@@ -1,7 +1,7 @@
 package NeuralNetwork;
 
 import NeuralNetwork.activation.Sigmoid;
-import NeuralNetwork.intializers.RandomInit;
+import NeuralNetwork.initializers.RandomInit;
 import NeuralNetwork.loss.CrossEntropy;
 import NeuralNetwork.loss.LossFunction;
 import NeuralNetwork.loss.MSE;
