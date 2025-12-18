@@ -106,4 +106,22 @@ public class Utils {
             Y[j] = tempY;
         }
     }
+
+    // Add Gaussian noise to the dataset
+    public static double[][] addNoise(double[][] data, double stdDev) {
+        java.util.Random rand = new java.util.Random();
+        int rows = data.length;
+        int cols = data[0].length;
+        double[][] noisyData = new double[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                // Add Gaussian noise
+                noisyData[i][j] = data[i][j] + stdDev * rand.nextGaussian();
+            }
+        }
+
+        return noisyData;
+    }
+
 }

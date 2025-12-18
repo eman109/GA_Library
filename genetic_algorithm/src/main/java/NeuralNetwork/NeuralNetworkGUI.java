@@ -1,197 +1,172 @@
 package NeuralNetwork;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import NeuralNetwork.*;
 import NeuralNetwork.activation.*;
 import NeuralNetwork.intializers.*;
 import NeuralNetwork.loss.*;
 import NeuralNetwork.optimizer.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
-public class NeuralNetworkGUI extends JFrame {
-
-    private JTextField inputSizeField;
-    private JTextField hiddenSizeField;
-    private JTextField outputSizeField;
-    private JTextField learningRateField;
-    private JTextField epochsField;
-    private JComboBox<String> activationBox;
-    private JComboBox<String> lossBox;
-    private JTextArea outputArea;
-    private JButton trainButton;
-
-    private NeuralNetwork network;
-
-    public NeuralNetworkGUI() {
-        setTitle("Neural Network Trainer");
-        setSize(600, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
-
-        // Create panels
-        JPanel configPanel = createConfigPanel();
-        JPanel buttonPanel = createButtonPanel();
-        JPanel outputPanel = createOutputPanel();
-
-        add(configPanel, BorderLayout.NORTH);
-        add(buttonPanel, BorderLayout.CENTER);
-        add(outputPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
-    }
-
-    private JPanel createConfigPanel() {
-        JPanel panel = new JPanel(new GridLayout(6, 2, 5, 5));
-        panel.setBorder(BorderFactory.createTitledBorder("Network Configuration"));
-
-        // Input size
-        panel.add(new JLabel("Input Size:"));
-        inputSizeField = new JTextField("2");
-        panel.add(inputSizeField);
-
-        // Hidden layer size
-        panel.add(new JLabel("Hidden Layer Size:"));
-        hiddenSizeField = new JTextField("3");
-        panel.add(hiddenSizeField);
-
-        // Output size
-        panel.add(new JLabel("Output Size:"));
-        outputSizeField = new JTextField("2");
-        panel.add(outputSizeField);
-
-        // Learning rate
-        panel.add(new JLabel("Learning Rate:"));
-        learningRateField = new JTextField("0.1");
-        panel.add(learningRateField);
-
-        // Epochs
-        panel.add(new JLabel("Epochs:"));
-        epochsField = new JTextField("100");
-        panel.add(epochsField);
-
-        // Activation function
-        panel.add(new JLabel("Activation:"));
-        activationBox = new JComboBox<>(new String[]{"Sigmoid", "ReLU", "Tanh", "Linear"});
-        panel.add(activationBox);
-
-        return panel;
-    }
-
-    private JPanel createButtonPanel() {
-        JPanel panel = new JPanel(new FlowLayout());
-
-        trainButton = new JButton("Train Network (XOR Problem)");
-        trainButton.addActionListener(e -> trainNetwork());
-
-        JButton clearButton = new JButton("Clear Output");
-        clearButton.addActionListener(e -> outputArea.setText(""));
-
-        panel.add(trainButton);
-        panel.add(clearButton);
-
-        return panel;
-    }
-
-    private JPanel createOutputPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Training Output"));
-
-        outputArea = new JTextArea(10, 50);
-        outputArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(outputArea);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        return panel;
-    }
-
-    private void trainNetwork() {
-        try {
-            // Get parameters
-            int inputSize = Integer.parseInt(inputSizeField.getText());
-            int hiddenSize = Integer.parseInt(hiddenSizeField.getText());
-            int outputSize = Integer.parseInt(outputSizeField.getText());
-            double learningRate = Double.parseDouble(learningRateField.getText());
-            int epochs = Integer.parseInt(epochsField.getText());
-
-            // Get activation function
-            Activation activation = getActivation();
-
-            // Build network
-            network = new NeuralNetwork();
-            network.addLayer(new DenseLayer(inputSize, hiddenSize, activation,
-                    new RandomInit(-1, 1), learningRate));
-            network.addLayer(new DenseLayer(hiddenSize, outputSize, new Sigmoid(),
-                    new RandomInit(-1, 1), learningRate));
-
-            network.setLossFunction(new MSE());
-            network.setOptimizer(new SGD(learningRate));
-
-            // XOR dataset
-            double[][] X = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
-            double[][] Y = {{0, 1}, {1, 0}, {1, 0}, {0, 1}};
-
-            outputArea.append("=== Training Started ===\n");
-            outputArea.append("Input Size: " + inputSize + "\n");
-            outputArea.append("Hidden Size: " + hiddenSize + "\n");
-            outputArea.append("Output Size: " + outputSize + "\n");
-            outputArea.append("Learning Rate: " + learningRate + "\n");
-            outputArea.append("Epochs: " + epochs + "\n\n");
-
-            // Train
-            for (int epoch = 0; epoch < epochs; epoch++) {
-                double[][] predictions = network.forward(X);
-                network.backward(predictions, Y);
-
-                // Calculate loss
-                double totalLoss = 0;
-                for (int i = 0; i < X.length; i++) {
-                    totalLoss += network.getLossFunction().calcLoss(predictions[i], Y[i]);
-                }
-                double avgLoss = totalLoss / X.length;
-
-                // Print every 10 epochs
-                if ((epoch + 1) % 10 == 0) {
-                    outputArea.append("Epoch " + (epoch + 1) + " Loss: " +
-                            String.format("%.6f", avgLoss) + "\n");
-                }
-            }
-
-            // Show predictions
-            double[][] finalPredictions = network.predict(X);
-            outputArea.append("\n=== Final Predictions ===\n");
-            for (int i = 0; i < X.length; i++) {
-                outputArea.append("Input: [" + X[i][0] + ", " + X[i][1] + "] -> ");
-                outputArea.append("Predicted: [" +
-                        String.format("%.4f", finalPredictions[i][0]) + ", " +
-                        String.format("%.4f", finalPredictions[i][1]) + "]\n");
-            }
-            outputArea.append("\n");
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Error: " + ex.getMessage(),
-                    "Training Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private Activation getActivation() {
-        String selected = (String) activationBox.getSelectedItem();
-        switch (selected) {
-            case "ReLU": return new ReLU();
-            case "Tanh": return new Tanh();
-            case "Linear": return new Linear();
-            default: return new Sigmoid();
-        }
-    }
-
-    // Add getter for loss function (needed in NeuralNetwork.java)
-    private LossFunction getLossFunction() {
-        return network.getLossFunction();
-    }
+public class NeuralNetworkGUI {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new NeuralNetworkGUI());
+        System.out.println("╔══════════════════════════════════════════════════════╗");
+        System.out.println("║ ENERGY EFFICIENCY - SINGLE OUTPUT VERSION           ║");
+        System.out.println("╚══════════════════════════════════════════════════════╝\n");
+
+        // Step 1: Load data
+        System.out.println("Step 1: Loading data...");
+        List<double[]> features = new ArrayList<>();
+        List<Integer> labels = new ArrayList<>();
+
+        String[] possiblePaths = {
+                "src/main/resources/dataset/energy_efficiency_data_1A.csv",
+                "resources/dataset/energy_efficiency_data_1A.csv",
+                "C:/Users/Basant/Desktop/energy_efficiency_data_1A.csv",
+                "energy_efficiency_data_1A.csv"
+        };
+
+        BufferedReader br = null;
+        boolean fileFound = false;
+        for (String path : possiblePaths) {
+            try {
+                File file = new File(path);
+                if (file.exists()) {
+                    System.out.println("Found file at: " + path);
+                    br = new BufferedReader(new FileReader(file));
+                    fileFound = true;
+                    break;
+                }
+            } catch (Exception e) {}
+        }
+
+        if (!fileFound) {
+            try {
+                InputStream is = NeuralNetworkGUI.class.getClassLoader()
+                        .getResourceAsStream("dataset/energy_efficiency_data_1A.csv");
+                if (is != null) {
+                    System.out.println("Found file in resources");
+                    br = new BufferedReader(new InputStreamReader(is));
+                    fileFound = true;
+                }
+            } catch (Exception e) {}
+        }
+
+        if (!fileFound || br == null) {
+            System.err.println("❌ ERROR: Could not find CSV file");
+            return;
+        }
+
+        try {
+            br.readLine(); // skip header
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                String[] values = line.split(",");
+                double[] row = new double[8];
+                for (int i = 0; i < 8; i++) {
+                    row[i] = values[i].trim().isEmpty() ? 0.0 : Double.parseDouble(values[i].trim());
+                }
+                labels.add(values[10].trim().equals("Efficient") ? 1 : 0); // 1 = Efficient, 0 = Not Efficient
+                features.add(row);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        System.out.println("✓ Loaded " + features.size() + " samples");
+
+        int efficient = 0, inefficient = 0;
+        for (int label : labels) {
+            if (label == 1) efficient++;
+            else inefficient++;
+        }
+        System.out.println("  - Efficient: " + efficient);
+        System.out.println("  - Inefficient: " + inefficient);
+
+        // Step 2: Preprocess
+        System.out.println("\nStep 2: Preprocessing data...");
+        double[][] data = features.toArray(new double[0][]);
+        data = Utils.handleMissingValues(data);
+        data = Utils.normalize(data);
+        System.out.println("✓ Data preprocessed");
+
+        // Step 3: Prepare X and y arrays
+        double[][] X_all = new double[data.length][8];
+        double[][] y_all = new double[data.length][1]; // SINGLE output neuron
+        for (int i = 0; i < data.length; i++) {
+            X_all[i] = data[i];
+            y_all[i][0] = labels.get(i); // 1 = Efficient, 0 = Not Efficient
+        }
+
+        Utils.shuffle(X_all, y_all);
+        System.out.println("✓ Data shuffled");
+
+        // Step 4: Train/Test split 80/20
+        int trainSize = (int) (0.8 * data.length);
+        int testSize = data.length - trainSize;
+
+        double[][] X_train = new double[trainSize][8];
+        double[][] y_train = new double[trainSize][1];
+        double[][] X_test = new double[testSize][8];
+        double[][] y_test = new double[testSize][1];
+
+        System.arraycopy(X_all, 0, X_train, 0, trainSize);
+        System.arraycopy(y_all, 0, y_train, 0, trainSize);
+        System.arraycopy(X_all, trainSize, X_test, 0, testSize);
+        System.arraycopy(y_all, trainSize, y_test, 0, testSize);
+
+        System.out.println("\n✓ Training samples: " + trainSize);
+        System.out.println("✓ Test samples: " + testSize);
+
+        // Step 5: Build network (single output)
+        System.out.println("\nStep 5: Building network...");
+        NeuralNetwork nn = new NeuralNetwork();
+        double learningRate = 0.005;
+
+        nn.addLayer(new DenseLayer(8, 32, new ReLU(), new Heinit(), learningRate));
+        nn.addLayer(new DenseLayer(32, 16, new ReLU(), new Heinit(), learningRate));
+        nn.addLayer(new DenseLayer(16, 1, new Sigmoid(), new Heinit(), learningRate)); // SINGLE OUTPUT
+
+        nn.setLossFunction(new CrossEntropy());
+        nn.setOptimizer(new SGD(learningRate));
+
+        System.out.println("✓ Network built");
+
+        // Step 6: Train
+        System.out.println("\nStep 6: Training...");
+        nn.train(X_train, y_train, 300, 32);
+
+        // Step 7: Evaluate
+        double trainAcc = calculateAccuracy(nn, X_train, y_train);
+        double testAcc = calculateAccuracy(nn, X_test, y_test);
+
+        System.out.println("\n" + "=".repeat(40));
+        System.out.println("RESULTS");
+        System.out.println("=".repeat(40));
+        System.out.println("Training Accuracy: " + String.format("%.2f%%", trainAcc));
+        System.out.println("Test Accuracy:     " + String.format("%.2f%%", testAcc));
+        System.out.println("=".repeat(40));
+    }
+
+    private static double calculateAccuracy(NeuralNetwork nn, double[][] X, double[][] y) {
+        int correct = 0;
+        for (int i = 0; i < X.length; i++) {
+            double[][] pred = nn.forward(new double[][]{X[i]});
+            int predicted = pred[0][0] > 0.5 ? 1 : 0;
+            int actual = (int) y[i][0];
+            if (predicted == actual) correct++;
+        }
+        return correct * 100.0 / X.length;
     }
 }

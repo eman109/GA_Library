@@ -4,6 +4,11 @@ import NeuralNetwork.activation.Activation;
 import NeuralNetwork.intializers.Initializer;
 import NeuralNetwork.optimizer.Optimizer;
 
+
+import NeuralNetwork.activation.Activation;
+import NeuralNetwork.intializers.Initializer;
+import NeuralNetwork.optimizer.Optimizer;
+
 public class DenseLayer extends Layer {
 
     private int inputSize;
@@ -12,10 +17,13 @@ public class DenseLayer extends Layer {
     private double[] biases;
     private Activation activation;
 
-    private double[][] inputCache;  // Store input for backprop
-    private double learningRate;    // learning rate for weight/bias updates
+    private double[][] inputCache;      // Store input for backprop
+    private double[][] preActivation;   // Store Z = W*X + b (CRITICAL!)
+    private double[][] postActivation;  // Store activated output
+    private double learningRate;
 
-    public DenseLayer(int inputSize, int outputSize, Activation activation, Initializer initializer, double learningRate) {
+    public DenseLayer(int inputSize, int outputSize, Activation activation,
+                      Initializer initializer, double learningRate) {
         this.inputSize = inputSize;
         this.outputSize = outputSize;
         this.activation = activation;
@@ -29,63 +37,99 @@ public class DenseLayer extends Layer {
     @Override
     public double[][] forward(double[][] input) {
         this.inputCache = input;
-
         int batchSize = input.length;
-        double[][] output = new double[batchSize][outputSize];
 
-        // Linear transformation: input * weights + biases
+        // Pre-activation: Z = X * W + b
+        this.preActivation = new double[batchSize][outputSize];
         for (int i = 0; i < batchSize; i++) {
             for (int j = 0; j < outputSize; j++) {
-                output[i][j] = biases[j];
+                preActivation[i][j] = biases[j];
                 for (int k = 0; k < inputSize; k++) {
-                    output[i][j] += input[i][k] * weights[k][j];
+                    preActivation[i][j] += input[i][k] * weights[k][j];
                 }
             }
         }
 
-        // Apply activation function
-        output = activation.activate(output);
-
-        return output;
+        // Post-activation: A = activation(Z)
+        this.postActivation = activation.activate(preActivation);
+        return postActivation;
     }
 
     @Override
     public double[][] backward(double[][] gradOutput, Optimizer optimizer) {
-        // Gradient of activation (uses cached forward output)
-        double[][] gradActivation = activation.derivative(gradOutput);
+        int batchSize = inputCache.length;
 
-        // Gradients w.r.t weights and biases
-        double[][] gradWeights = new double[inputSize][outputSize];
-        double[] gradBiases = new double[outputSize];
+        // ═══════════════════════════════════════════════════════════
+        // CRITICAL FIX: Use PRE-ACTIVATION values for derivative!
+        // ═══════════════════════════════════════════════════════════
+        double[][] activationGrad = activation.derivative(preActivation);
+        double[][] gradZ = new double[batchSize][outputSize];
 
-        for (int i = 0; i < inputCache.length; i++) {
+        // Element-wise multiplication: dL/dZ = dL/dA ⊙ dA/dZ
+        for (int i = 0; i < batchSize; i++) {
             for (int j = 0; j < outputSize; j++) {
-                gradBiases[j] += gradActivation[i][j];
+                gradZ[i][j] = gradOutput[i][j] * activationGrad[i][j];
+            }
+        }
+
+        // Gradient w.r.t weights: dL/dW = X^T * dL/dZ
+        double[][] gradWeights = new double[inputSize][outputSize];
+        for (int i = 0; i < batchSize; i++) {
+            for (int j = 0; j < outputSize; j++) {
                 for (int k = 0; k < inputSize; k++) {
-                    gradWeights[k][j] += inputCache[i][k] * gradActivation[i][j];
+                    gradWeights[k][j] += inputCache[i][k] * gradZ[i][j];
                 }
             }
+        }
+
+        // Average gradients over batch
+        for (int i = 0; i < inputSize; i++) {
+            for (int j = 0; j < outputSize; j++) {
+                gradWeights[i][j] /= batchSize;
+            }
+        }
+
+        // Gradient w.r.t biases: dL/db = sum(dL/dZ)
+        double[] gradBiases = new double[outputSize];
+        for (int i = 0; i < batchSize; i++) {
+            for (int j = 0; j < outputSize; j++) {
+                gradBiases[j] += gradZ[i][j];
+            }
+        }
+
+        // Average bias gradients
+        for (int j = 0; j < outputSize; j++) {
+            gradBiases[j] /= batchSize;
         }
 
         // Update weights using optimizer
         optimizer.updateWeights(weights, gradWeights, learningRate);
 
-        // Update biases manually (simple SGD step)
+        // Update biases
         for (int j = 0; j < outputSize; j++) {
             biases[j] -= learningRate * gradBiases[j];
         }
 
-        // Compute gradient to pass to previous layer
-        double[][] gradInput = new double[inputCache.length][inputSize];
-        for (int i = 0; i < inputCache.length; i++) {
+        // Gradient w.r.t input: dL/dX = dL/dZ * W^T
+        double[][] gradInput = new double[batchSize][inputSize];
+        for (int i = 0; i < batchSize; i++) {
             for (int j = 0; j < inputSize; j++) {
                 gradInput[i][j] = 0;
                 for (int k = 0; k < outputSize; k++) {
-                    gradInput[i][j] += gradActivation[i][k] * weights[j][k];
+                    gradInput[i][j] += gradZ[i][k] * weights[j][k];
                 }
             }
         }
 
         return gradInput;
+    }
+
+    // Getters for debugging
+    public double[][] getWeights() {
+        return weights;
+    }
+
+    public double[] getBiases() {
+        return biases;
     }
 }
