@@ -7,13 +7,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import NeuralNetwork.*;
 import NeuralNetwork.activation.*;
-import NeuralNetwork.intializers.*;
+import NeuralNetwork.initializers.*;
 import NeuralNetwork.loss.*;
 import NeuralNetwork.optimizer.*;
+import javax.swing.*;
+import java.awt.*;
 
 public class NeuralNetworkGUI {
 

@@ -1,4 +1,4 @@
-package NeuralNetwork.intializers;
+package NeuralNetwork.initializers;
 
 
 

@@ -2,7 +2,7 @@ package NeuralNetwork.caseStudy;
 
 import NeuralNetwork.*;
 import NeuralNetwork.activation.*;
-import NeuralNetwork.intializers.*;
+import NeuralNetwork.initializers.*;
 import NeuralNetwork.loss.*;
 import NeuralNetwork.optimizer.*;
 

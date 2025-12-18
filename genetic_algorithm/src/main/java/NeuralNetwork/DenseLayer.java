@@ -1,13 +1,9 @@
 package NeuralNetwork;
 
 import NeuralNetwork.activation.Activation;
-import NeuralNetwork.intializers.Initializer;
+import NeuralNetwork.initializers.Initializer;
 import NeuralNetwork.optimizer.Optimizer;
 
-
-import NeuralNetwork.activation.Activation;
-import NeuralNetwork.intializers.Initializer;
-import NeuralNetwork.optimizer.Optimizer;
 
 public class DenseLayer extends Layer {
 
